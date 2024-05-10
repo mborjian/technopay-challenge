@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'version' => env('APP_VERSION', '1.0.0'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -123,5 +125,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Contact Info
+    |--------------------------------------------------------------------------
+    */
+
+    'admin_email' => env('ADMIN_EMAIL', 'admin@admin.ir'),
+
+    'admin_phone' => env('ADMIN_PHONE', '0910000000'),
 
 ];
