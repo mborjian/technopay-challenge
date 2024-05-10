@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -45,3 +44,16 @@ class User extends Authenticatable
         ];
     }
 
+
+    /**
+     * This scope is 4 getting users of type 'customer'
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function scopeCustomers($query): mixed
+    {
+        return $query->where('type', 'customer');
+    }
+
+}
