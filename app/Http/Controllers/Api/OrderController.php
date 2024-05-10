@@ -57,6 +57,7 @@ class OrderController extends Controller
 
         } catch (Throwable $th) {
             Log::error($th->getMessage());
+            throw new ApiException("Failed to fetch data from external service");
         }
     }
 }
