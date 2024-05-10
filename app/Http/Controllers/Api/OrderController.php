@@ -33,9 +33,6 @@ class OrderController extends Controller
     public function filter(Request $request): JsonResponse
     {
         try {
-            // For test ApiException
-            // $a = 1 / 0;
-
             $specs = [];
 
             if ($request->has('status')) {
