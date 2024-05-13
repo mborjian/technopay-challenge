@@ -2,19 +2,23 @@
 
 namespace App\Exceptions;
 
-
-use App\Notifications\ErrorNotification;
+use App\Notifications\AdminNotifier;
+use App\Services\LogLogger;
+use App\Services\MailNotificationSender;
+use App\Services\SmsNotificationSender;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 
 class ApiException extends Exception
 {
-    public function __construct($message = "Error processing order", $code = 500)
+    protected LogLogger $logger;
+
+    public function __construct($message = "Error happened", $code = 500)
     {
         parent::__construct($message, $code);
+
+        $this->logger = new LogLogger();
     }
 
     /**
@@ -25,10 +29,15 @@ class ApiException extends Exception
      */
     public function report(): void
     {
-        Notification::route('mail', config('app.admin_email'))
-            ->route('sms', config('app.admin_phone'))
-            ->notify(new ErrorNotification($this));
-        Log::error('API Error', ['exception' => $this]);
+        $notifier = new AdminNotifier();
+
+        $notifier->setNotifier(new mailNotificationSender());
+        $notifier->send($this->getMessage());
+
+        $notifier->setNotifier(new SmsNotificationSender());
+        $notifier->send($this->getMessage());
+
+        $this->logger->error('API Error', ['exception' => $this]);
     }
 
     /**
@@ -37,7 +46,7 @@ class ApiException extends Exception
      * @param $request
      * @return JsonResponse|Response
      */
-    public function render($request): JsonResponse|Response
+    public function render($request): Response|JsonResponse
     {
         if ($request->wantsJson()) {
             return $this->jsonResponse();
@@ -45,7 +54,6 @@ class ApiException extends Exception
 
         return response()->view('errors.general', ['message' => $this->getMessage()], $this->code);
     }
-
 
     /**
      * Create json formatted response
@@ -67,4 +75,3 @@ class ApiException extends Exception
         return response()->json($response, $this->code);
     }
 }
-
