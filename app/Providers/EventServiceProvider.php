@@ -8,6 +8,16 @@ use Illuminate\Support\ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
+    protected array $listen = [
+        'Illuminate\Notifications\Events\NotificationSending' => [
+            'App\Listeners\LogSendingNotification',
+        ],
+        'Illuminate\Notifications\Events\NotificationSent' => [
+            'App\Listeners\LogSentNotification',
+        ],
+    ];
+
+
     /**
      * Register services.
      */
@@ -21,5 +31,12 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->app->extend(ChannelManager::class, function ($service) {
+            $service->extend('mock_sms', function ($app) {
+                return $app->make(MockSmsChannel::class);
+            });
+
+            return $service;
+        });
     }
 }
