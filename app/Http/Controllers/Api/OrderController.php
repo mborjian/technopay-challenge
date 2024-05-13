@@ -11,7 +11,6 @@ use App\Specifications\OrderSpecifications\OrderAmountRangeSpecification;
 use App\Specifications\OrderSpecifications\OrderStatusSpecification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class OrderController extends Controller
@@ -22,6 +21,7 @@ class OrderController extends Controller
     {
         $this->orderRepository = $orderRepository;
     }
+
 
     /**
      * Function of filtering orders based on incoming request parameters
@@ -53,8 +53,7 @@ class OrderController extends Controller
             return response()->json($orders);
 
         } catch (Throwable $th) {
-            Log::error($th->getMessage());
-            throw new ApiException("Failed to fetch data from external service");
+            throw new ApiException($th->getMessage(), 500);
         }
     }
 }
