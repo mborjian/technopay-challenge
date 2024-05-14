@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Repositories\NewOrderRepository;
 use App\Strategies\OrderFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -30,7 +31,11 @@ class StrategyOrderController extends Controller
             $orders = $this->orderRepository->getAll();
             $filteredOrders = $this->orderFilter->filter($request, $orders);
 
-            return response()->json($filteredOrders->get());
+            if ($filteredOrders instanceof Builder) {
+                $filteredOrders = $filteredOrders->get();
+            }
+
+            return response()->json($filteredOrders);
         } catch (Throwable $th) {
             throw new ApiException($th->getMessage(), 500);
         }
